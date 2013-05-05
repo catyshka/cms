@@ -403,7 +403,7 @@ def _restore_sekizai(context, changes):
 
 
 def _show_placeholder_for_page(context, placeholder_name, page_lookup, lang=None,
-                               site=None, cache_result=True):
+                               site=None, cache_result=True, content_max_length=None):
     """
     Shows the content of a page with a placeholder name and given lookup
     arguments in the given language.
@@ -444,6 +444,10 @@ def _show_placeholder_for_page(context, placeholder_name, page_lookup, lang=None
         return {'content': ''}
     watcher = Watcher(context)
     content = render_placeholder(placeholder, context, placeholder_name)
+    # Fixed by kisele
+    if content_max_length:
+        content = content[:content_max_length]
+    ##
     changes = watcher.get_changes()
     if cache_result:
         cache.set(cache_key, {'content': content, 'sekizai': changes}, get_cms_setting('CACHE_DURATIONS')['content'])
@@ -462,18 +466,20 @@ class ShowPlaceholderById(InclusionTag):
         Argument('reverse_id'),
         Argument('lang', required=False, default=None),
         Argument('site', required=False, default=None),
+        Argument('content_max_length', required=False, default=None),
     )
 
     def get_context(self, *args, **kwargs):
         return _show_placeholder_for_page(**self.get_kwargs(*args, **kwargs))
 
-    def get_kwargs(self, context, placeholder_name, reverse_id, lang, site):
+    def get_kwargs(self, context, placeholder_name, reverse_id, lang, site, content_max_length):
         return {
             'context': context,
             'placeholder_name': placeholder_name,
             'page_lookup': reverse_id,
             'lang': lang,
-            'site': site
+            'site': site,
+            'content_max_length': content_max_length
         }
 
 
