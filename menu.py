@@ -210,11 +210,14 @@ def page_to_node(page, home, cut):
     attr['redirect_url'] = page.get_redirect()  # save redirect URL if any
 
     # Now finally, build the NavigationNode object and return it.
+    # Fixed by kisele
+    _lang = lang.split("-")[0]
+    ##
     ret_node = NavigationNode(
-        page.get_menu_title(),
-        page.get_absolute_url(),
-        page.pk,
-        parent_id,
+        page.get_menu_title(_lang), 
+        page.get_absolute_url(_lang), 
+        page.pk, 
+        parent_id, 
         attr=attr,
         visible=page.in_navigation,
     )

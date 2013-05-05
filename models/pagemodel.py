@@ -667,6 +667,11 @@ class Page(MPTTModel):
         """
         get the menu title of the page depending on the given language
         """
+        # Fixed by kisele
+        if not language:
+            lang = get_language()
+            language = lang.split("-")[0]
+        ##
         menu_title = self.get_title_obj_attribute("menu_title", language, fallback, version_id, force_reload)
         if not menu_title:
             return self.get_title(language, True, version_id, force_reload)
